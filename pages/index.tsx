@@ -1,6 +1,7 @@
 import {
+  Alert,
   Button,
-  Card, ListGroup,
+  Table
 } from 'react-bootstrap'
 import RootNav from '../src/components/RootNav'
 import { useSession, signIn, signOut } from "next-auth/react"
@@ -26,18 +27,33 @@ function Home() {
   }, [session])
 
   if (session === undefined) {
-    return <div>Loading...</div>
+    return (
+      <Alert variant="info">Loading...</Alert>
+    )
   }
+
+  const user = session?.user
 
   return (
     <RootNav>
-      <Card>
-        <Card.Body>
-          { session?.user ? <Button onClick={() => signOut()}>Sign out</Button> : <Button onClick={() => signIn()}>Sign in</Button> }
-        </Card.Body>
-      </Card>
+      <Table striped bordered>
+        <tbody>
+          {infoRow("Name", user?.name || "Unknown")}
+          {infoRow("Email", user?.email || "Unknown")}
+        </tbody>
+      </Table>
+      <Button onClick={() => signOut()}>Sign out</Button>
     </RootNav>
   )
+
+  function infoRow(key: string, value: string) {
+    return (
+      <tr>
+        <th style={{ whiteSpace: 'nowrap' }}>{key}</th>
+        <td style={{ width: '100%' }}>{value}</td>
+      </tr>
+    )
+  }
 }
 
 export default Home
