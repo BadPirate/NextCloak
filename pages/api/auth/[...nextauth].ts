@@ -1,13 +1,9 @@
-import NextAuth, { NextAuthOptions, Session } from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import Email from "next-auth/providers/email"
 import { TypeORMAdapter } from "@auth/typeorm-adapter"
 import jwt from "jsonwebtoken"
 import { JWT } from "next-auth/jwt"
-
-const authTypeORMConnection = process.env.AUTH_TYPEORM_CONNECTION
-if (!authTypeORMConnection) {
-  throw new Error("AUTH_TYPEORM_CONNECTION environment variable is not defined")
-}
+import { authTypeORMConnection } from "../../../src/AppDataSource"
 
 declare module "next-auth" {
   interface Session {
@@ -19,6 +15,7 @@ declare module "next-auth" {
     }
   }
 }
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -40,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
-    async session({ session, token, user }) {
+    async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id
         session.user.email = user.email
