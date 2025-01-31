@@ -1,20 +1,58 @@
-# Nextstrap
+# NextCloak: Next.js Common Authentication Provider
 
-A simple project the way Badpirate likes it:
+This project is a Next.js based common authentication provider using `next-auth` and `TypeORM`.
 
-- Next JS
-- Typescript
-- Eslint (Airbnb)
-- No forking semi-colons
+## Setup
 
-Feel free to fork for your own project if want to make a quick web project based on the best setup available.
+### Production Environment
 
-## Using
+1. You can add / update any of the Providers that 
+    [NextAuth supports](https://next-auth.js.org/v3/configuration/providers#oauth-providers), by default it's 
+    configured to use email link.
+   
+2. Create a `.env` file in the root directory with the following environment variables:
 
-1. `git clone git@github.com:BadPirate/nextstrap.git MyCoolNextProject`
-2. Rename the project in `package.json`
-3. `yarn dev`
+    ```env
+    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
+    EMAIL_FROM=no-reply@example.com
+    AUTH_TYPEORM_CONNECTION=postgres://user:pass@localhost:5432/dbname
+    NEXTAUTH_SECRET=your-secret-key
+    ```
 
-## Theme
+3. Build the project:
 
-Currently comes preinstalled with [Cyborg](https://bootswatch.com/cyborg/), but you can download any theme that you want to use or the default min theme.  Replacing the min'd css at `styles/bootstrap.min.css`
+    ```sh
+    npm run build
+    ```
+
+4. Start the production server:
+
+    ```sh
+    npm start
+    ```
+
+### Development Environment
+
+1. Create a [.env.local](http://_vscodecontentref_/0) file in the root directory with the following environment variables:
+
+    ```env
+    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
+    EMAIL_FROM=no-reply@example.com
+    AUTH_TYPEORM_CONNECTION=postgres://user:pass@localhost:5432/dbname
+    NEXTAUTH_SECRET=your-secret-key
+    ```
+
+2. Install dependencies:
+
+    ```sh
+    npm install
+    ```
+
+3. Run the development server:
+
+    ```sh
+    npm run dev
+    ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+

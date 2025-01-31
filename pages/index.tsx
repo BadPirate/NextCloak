@@ -1,27 +1,43 @@
 import {
+  Button,
   Card, ListGroup,
 } from 'react-bootstrap'
 import RootNav from '../src/components/RootNav'
+import { useSession, signIn, signOut } from "next-auth/react"
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-const Home = () => (
-  <div>
+function Home() {
+  const { data: session } = useSession()
+
+
+  const router = useRouter()
+
+  useEffect(() => {
+    if (session === undefined) {
+      return
+    }
+
+    if (!session?.user) {
+      signIn()
+    } else if (process.env.HOME_URL) {
+      router.push(process.env.HOME_URL)
+    }
+  }, [session])
+
+  if (session === undefined) {
+    return <div>Loading...</div>
+  }
+
+  return (
     <RootNav>
       <Card>
         <Card.Body>
-          <Card.Title><a href="https://github.com/BadPirate/nextstrap">Nextstrap</a></Card.Title>
-          <Card.Text>
-            A template for building full stack projects, just the way BadPirate likes it.
-          </Card.Text>
-          <ListGroup>
-            <ListGroup.Item>Next JS</ListGroup.Item>
-            <ListGroup.Item>Typescript</ListGroup.Item>
-            <ListGroup.Item>ESLint</ListGroup.Item>
-            <ListGroup.Item>ReactBootstrap</ListGroup.Item>
-          </ListGroup>
+          { session?.user ? <Button onClick={() => signOut()}>Sign out</Button> : <Button onClick={() => signIn()}>Sign in</Button> }
         </Card.Body>
       </Card>
     </RootNav>
-  </div>
-)
+  )
+}
 
 export default Home

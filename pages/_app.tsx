@@ -2,8 +2,16 @@ import '../styles/bootstrap.min.css'
 import '../styles/global.css'
 
 import type { AppProps } from 'next/app'
+import { SessionProvider } from "next-auth/react"
 
-// eslint-disable-next-line react/jsx-props-no-spreading
-const App = ({ Component, pageProps }: AppProps) => <Component {...pageProps} />
-
+function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps & { pageProps: { session: any } }) {
+  return (
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  )
+}
 export default App
