@@ -2,6 +2,8 @@
 
 This project is a Next.js based common authentication provider using `next-auth` and `TypeORM`.
 
+Based on [NextStrap](https://github.com/BadPirate/nextstrap)
+
 ## Setup
 
 ### Production Environment
@@ -15,7 +17,7 @@ This project is a Next.js based common authentication provider using `next-auth`
     ```env
     EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
     EMAIL_FROM=no-reply@example.com
-    AUTH_TYPEORM_CONNECTION=postgres://user:pass@localhost:5432/dbname
+    AUTH_TYPEORM_CONNECTION=postgres://user:pass@postgreshost:5432/dbname
     NEXTAUTH_SECRET=your-secret-key
     ```
 
