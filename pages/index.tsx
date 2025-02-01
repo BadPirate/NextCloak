@@ -1,108 +1,56 @@
-import {
-  Alert,
-  Button,
-  Table,
-  Form,
-  InputGroup,
-} from "react-bootstrap"
-import RootNav from "../src/components/RootNav"
-import { useSession, signIn, signOut } from "next-auth/react"
+import { Alert, Button } from "react-bootstrap"
+import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
+import UserInfoCard from "../src/components/UserInfoCard"
+import { GetServerSideProps } from "next"
+import { getServerSession } from "next-auth"
+import { authOptions } from "./api/auth/[...nextauth]"
+import { getAppDataSource } from "../src/AppDataSource"
+import { CredentialsEntity } from "../src/entities/CredentialsEntity"
 
-function Home() {
-  const { data: session, update } = useSession()
+function Home({ hasPassword }: { hasPassword: boolean }) {
+  const { data: session, status } = useSession()
   const router = useRouter()
 
-  const [name, setName] = useState(session?.user?.name || "")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
   useEffect(() => {
-    if (session === undefined) {
+    console.log("Session", session)
+    if (status === "loading") return
+
+    if (!session || !session.user) {
+      signIn(undefined, { callbackUrl: "/" })
       return
     }
 
-    if (!session || !session.user) {
-      signIn()
-    } else if (process.env.HOME_URL) {
-      router.push(process.env.HOME_URL)
-    } else {
-      setName(session.user.name || "")
-    }
-  }, [session])
+  }, [session, status])
 
-  if (session === undefined) {
+  if (status === "loading") {
     return <Alert variant="info">Loading...</Alert>
   }
 
-  const user = session?.user
-
-  // Function to update user details
-  const updateUser = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch("/api/user", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to update user")
-      }
-
-      // Update session with the new name
-      await update({ user: { ...user, name } })
-    } catch (err) {
-      setError((err as Error).message)
-    } finally {
-      setLoading(false)
-    }
+  if (!session || !session.user) {
+    return <Button onClick={() => signIn(undefined, { callbackUrl: "/" })}>Sign In</Button>
   }
 
-  return (
-    <RootNav>
-      <Table striped bordered>
-        <tbody>
-          {infoRow("Email", user?.email || "Unknown")}
-          <tr>
-            <th style={{ whiteSpace: "nowrap" }}>Name</th>
-            <td>
-              <InputGroup>
-                <Form.Control
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
-                  placeholder="Not Set"
-                />
-                { !loading && name != user?.name ? (
-                <Button onClick={updateUser} disabled={loading || name === user?.name}>
-                  {loading ? "Saving..." : "Update"}
-                </Button>
-                ) : null }
-              </InputGroup>
-              {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
-            </td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button onClick={() => signOut()}>Sign out</Button>
-    </RootNav>
-  )
+  return <UserInfoCard user={session.user} hasPassword={hasPassword} />
+}
 
-  function infoRow(key: string, value: string) {
-    return (
-      <tr>
-        <th style={{ whiteSpace: "nowrap" }}>{key}</th>
-        <td style={{ width: "100%" }}>{value}</td>
-      </tr>
-    )
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerSession(context.req, context.res, authOptions)
+
+  if (!session || !session.user) {
+    console.log("No session found in SSR") // ✅ Debugging
+    return { props: { hasPassword: null } }
+  }
+
+  const AppDataSource = await getAppDataSource()
+  const CredentialsRepo = AppDataSource.getRepository(CredentialsEntity)
+
+  const credential = await CredentialsRepo.findOne({ where: { userId: session.user.id } })
+  const hasPassword = !!credential
+
+  return {
+    props: { hasPassword },
   }
 }
 
