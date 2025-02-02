@@ -6,7 +6,7 @@ import { DataSource } from 'typeorm'
 import CredentialsEntity from './entities/CredentialsEntity'
 import logger from './logger'
 
-const envOrmConnection = process.env.AUTH_TYPEORM_CONNECTION
+const envOrmConnection = process.env.AUTH_TYPEORM_CONNECTION || process.env.DATABASE_URL
 if (!envOrmConnection) {
   throw new Error('AUTH_TYPEORM_CONNECTION environment variable is not defined')
 }
