@@ -5,7 +5,7 @@ const RootNav = ({ children } : {children : React.ReactNode}) => (
   <div>
     <Navbar variant="dark" bg="secondary">
       <Navbar.Brand href="/" style={{ marginLeft: '1em', textTransform: 'capitalize' }}>
-        {process.env.NEXT_PUBLIC_APP_NAME}
+        BadPirate Garage Auth
       </Navbar.Brand>
       <Navbar.Text>
         {`v${process.env.NEXT_PUBLIC_APP_VERSION}`}
