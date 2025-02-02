@@ -7,6 +7,7 @@ import UserInfoCard from '../src/components/UserInfoCard'
 import { authOptions } from './api/auth/[...nextauth]'
 import { getAppDataSource } from '../src/AppDataSource'
 import CredentialsEntity from '../src/entities/CredentialsEntity'
+import logger from '../src/logger'
 
 const Home = ({ hasPassword }: { hasPassword: boolean }) => {
   const { data: session, status } = useSession()

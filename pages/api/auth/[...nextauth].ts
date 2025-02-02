@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
     Credentials({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
+        username: { label: 'Username', type: 'text', placeholder: 'User name' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -68,6 +68,7 @@ export const authOptions: NextAuthOptions = {
           user: {
             ...session.user,
             id: token.id as string,
+            name: token.name,
             email: token.email,
           },
         }

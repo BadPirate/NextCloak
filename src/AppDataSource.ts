@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm'
 // Initialize TypeORM DataSource
 
 import CredentialsEntity from './entities/CredentialsEntity'
+import logger from './logger'
 
 const envOrmConnection = process.env.AUTH_TYPEORM_CONNECTION
 if (!envOrmConnection) {

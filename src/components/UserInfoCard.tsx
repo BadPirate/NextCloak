@@ -1,7 +1,7 @@
 import {
   Alert, Button, Form, InputGroup, Table,
 } from 'react-bootstrap'
-import { signOut, useSession } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
 import RootNav from './RootNav'
 
@@ -26,9 +26,10 @@ const UserInfo = ({
   },
   hasPassword: boolean
 }) => {
-  const { data: session, update } = useSession()
+  const { data: session } = useSession()
 
   const [loading, setLoading] = useState(false)
+  const [hasSetPassword, setHasSetPassword] = useState(hasPassword)
 
   // State for name update
   const [name, setName] = useState(session?.user?.name || '')
@@ -47,9 +48,7 @@ const UserInfo = ({
     try {
       const response = await fetch('/api/user', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
       })
 
@@ -57,8 +56,7 @@ const UserInfo = ({
         throw new Error('Failed to update user')
       }
 
-      // Update session with the new name
-      await update({ user: { ...user, name } })
+      await signIn('credentials', { redirect: false }) // Refresh JWT
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -92,6 +90,7 @@ const UserInfo = ({
 
       setPassword('')
       setConfirmPassword('')
+      setHasSetPassword(true) // Tempoarily remember that it's set now
     } catch (err) {
       setPasswordError((err as Error).message)
     } finally {
@@ -99,7 +98,7 @@ const UserInfo = ({
     }
   }
 
-  const buttonText = hasPassword ? 'Change Password' : 'Set Password'
+  const buttonText = hasSetPassword ? 'Change Password' : 'Set Password'
 
   return (
     <RootNav>
@@ -141,7 +140,7 @@ const UserInfo = ({
               <Form.Group className="mb-2">
                 <Form.Control
                   type="password"
-                  placeholder={hasPassword ? 'Change Password' : 'Set Password'}
+                  placeholder={hasSetPassword ? 'Change Password' : 'Set Password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
