@@ -1,13 +1,15 @@
-import { Alert, Button, Form, InputGroup, Table } from "react-bootstrap"
-import RootNav from "./RootNav"
-import { signOut, useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import {
+  Alert, Button, Form, InputGroup, Table,
+} from 'react-bootstrap'
+import { signOut, useSession } from 'next-auth/react'
+import { useState } from 'react'
+import RootNav from './RootNav'
 
 function infoRow(key: string, value: string) {
   return (
     <tr>
-      <th style={{ whiteSpace: "nowrap" }}>{key}</th>
-      <td style={{ width: "100%" }}>{value}</td>
+      <th style={{ whiteSpace: 'nowrap' }}>{key}</th>
+      <td style={{ width: '100%' }}>{value}</td>
     </tr>
   )
 }
@@ -29,12 +31,12 @@ const UserInfo = ({
   const [loading, setLoading] = useState(false)
 
   // State for name update
-  const [name, setName] = useState(session?.user?.name || "")
+  const [name, setName] = useState(session?.user?.name || '')
   const [error, setError] = useState<string | null>(null)
 
   // State for password update
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
   // Function to update the user's name
@@ -43,16 +45,16 @@ const UserInfo = ({
     setError(null)
 
     try {
-      const response = await fetch("/api/user", {
-        method: "PATCH",
+      const response = await fetch('/api/user', {
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update user")
+        throw new Error('Failed to update user')
       }
 
       // Update session with the new name
@@ -70,26 +72,26 @@ const UserInfo = ({
     setPasswordError(null)
 
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match")
+      setPasswordError('Passwords do not match')
       setLoading(false)
       return
     }
 
     try {
-      const response = await fetch("/api/user", {
-        method: "PATCH",
+      const response = await fetch('/api/user', {
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ password }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update password")
+        throw new Error('Failed to update password')
       }
 
-      setPassword("")
-      setConfirmPassword("")
+      setPassword('')
+      setConfirmPassword('')
     } catch (err) {
       setPasswordError((err as Error).message)
     } finally {
@@ -97,13 +99,15 @@ const UserInfo = ({
     }
   }
 
+  const buttonText = hasPassword ? 'Change Password' : 'Set Password'
+
   return (
     <RootNav>
       <Table striped bordered>
         <tbody>
-          {infoRow("Email", user.email || "Unknown")}
+          {infoRow('Email', user.email || 'Unknown')}
           <tr>
-            <th style={{ whiteSpace: "nowrap" }}>Name</th>
+            <th style={{ whiteSpace: 'nowrap' }}>Name</th>
             <td>
               <InputGroup>
                 <Form.Control
@@ -118,7 +122,7 @@ const UserInfo = ({
                     onClick={updateUser}
                     disabled={loading || name === user?.name}
                   >
-                    {loading ? "Saving..." : "Update"}
+                    {loading ? 'Saving...' : 'Update'}
                   </Button>
                 ) : null}
               </InputGroup>
@@ -132,12 +136,12 @@ const UserInfo = ({
 
           {/* Password Update Section */}
           <tr>
-            <th style={{ whiteSpace: "nowrap" }}>Password</th>
+            <th style={{ whiteSpace: 'nowrap' }}>Password</th>
             <td>
               <Form.Group className="mb-2">
                 <Form.Control
                   type="password"
-                  placeholder={hasPassword ? "Change Password" : "Set Password"}
+                  placeholder={hasPassword ? 'Change Password' : 'Set Password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -157,7 +161,7 @@ const UserInfo = ({
                 onClick={updatePassword}
                 disabled={loading || password.length < 6 || confirmPassword.length < 6}
               >
-                {loading ? "Updating..." : hasPassword ? "Change Password" : "Set Password"}
+                {loading ? 'Updating...' : buttonText}
               </Button>
 
               {passwordError && (

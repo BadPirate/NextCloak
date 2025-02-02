@@ -1,35 +1,31 @@
-import { Alert, Button } from "react-bootstrap"
-import { useSession, signIn } from "next-auth/react"
-import { useRouter } from "next/router"
-import { useEffect } from "react"
-import UserInfoCard from "../src/components/UserInfoCard"
-import { GetServerSideProps } from "next"
-import { getServerSession } from "next-auth"
-import { authOptions } from "./api/auth/[...nextauth]"
-import { getAppDataSource } from "../src/AppDataSource"
-import { CredentialsEntity } from "../src/entities/CredentialsEntity"
+import { Alert, Button } from 'react-bootstrap'
+import { useSession, signIn } from 'next-auth/react'
+import { useEffect } from 'react'
+import { GetServerSideProps } from 'next'
+import { getServerSession } from 'next-auth'
+import UserInfoCard from '../src/components/UserInfoCard'
+import { authOptions } from './api/auth/[...nextauth]'
+import { getAppDataSource } from '../src/AppDataSource'
+import CredentialsEntity from '../src/entities/CredentialsEntity'
 
-function Home({ hasPassword }: { hasPassword: boolean }) {
+const Home = ({ hasPassword }: { hasPassword: boolean }) => {
   const { data: session, status } = useSession()
-  const router = useRouter()
 
   useEffect(() => {
-    console.log("Session", session)
-    if (status === "loading") return
+    logger.info('Session', session)
+    if (status === 'loading') return
 
     if (!session || !session.user) {
-      signIn(undefined, { callbackUrl: "/" })
-      return
+      signIn(undefined, { callbackUrl: '/' })
     }
-
   }, [session, status])
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return <Alert variant="info">Loading...</Alert>
   }
 
   if (!session || !session.user) {
-    return <Button onClick={() => signIn(undefined, { callbackUrl: "/" })}>Sign In</Button>
+    return <Button onClick={() => signIn(undefined, { callbackUrl: '/' })}>Sign In</Button>
   }
 
   return <UserInfoCard user={session.user} hasPassword={hasPassword} />
@@ -39,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions)
 
   if (!session || !session.user) {
-    console.log("No session found in SSR") // ✅ Debugging
+    logger.info('No session found in SSR') // ✅ Debugging
     return { props: { hasPassword: null } }
   }
 
