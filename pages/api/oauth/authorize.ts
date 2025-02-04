@@ -10,11 +10,12 @@ import logger from '../../../src/logger'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
-    client_id, redirect_uri, response_type, state, code_challenge, code_challenge_method,
+    client_id, redirect_uri, response_type, state, code_challenge, code_challenge_method, scope,
   } = req.query
 
   // ✅ 1. Validate Request Parameters
-  if (!client_id || !redirect_uri || !response_type || !code_challenge || !code_challenge_method) {
+  if (!client_id || !redirect_uri || !response_type || !code_challenge
+    || !code_challenge_method) {
     return res.status(400).json({ error: 'Invalid request parameters' })
   }
 
@@ -40,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // ✅ 4. Check If User is Authenticated
   const session = await getServerSession(req, res, authOptions)
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.id) {
   // Redirect to NextAuth sign-in, passing `callbackUrl` to bring them back after login
     const reqUrl = req.url
     if (!reqUrl) { throw new Error('Missing req.url') }
@@ -50,18 +51,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // ✅ 5. Generate Secure Authorization Code
   const authorizationCode = generateRandomString(32) // Secure random code
 
-  // ✅ 6. Generate JWT
+  const payload = {
+    sub: session.user.id,
+    client_id,
+    aud: client_id,
+    scope: scope || 'openid email profile',
+  }
 
   const accessToken = jwt.sign(
-    {
-      sub: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
-      image: session.user.image,
-      client_id,
-      aud: redirect_uri, // Allow client to only accept their tokens
-      token_type: 'oauth_access_token',
-    },
+    payload,
     authOptions.secret as string,
     { expiresIn: authOptions.jwt?.maxAge || (30 * 24 * 60 * 60) },
   )
