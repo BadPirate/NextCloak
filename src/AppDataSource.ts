@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm'
 
 import CredentialsEntity from './entities/CredentialsEntity'
 import logger from './logger'
+import OAuthAuthorizationCodeEntity from './entities/OAuthAuthorizationCodeEntity'
 
 const envOrmConnection = process.env.AUTH_TYPEORM_CONNECTION || process.env.DATABASE_URL
 if (!envOrmConnection) {
@@ -14,8 +15,9 @@ if (!envOrmConnection) {
 export const authTypeORMConnection = envOrmConnection // Import the new entity
 
 export const ExtendedEntities = [
-  CredentialsEntity, // ✅ Include custom credentials entity
-  ...Object.values(entities), // ✅ Exclude default UserEntity
+  OAuthAuthorizationCodeEntity,
+  CredentialsEntity,
+  ...Object.values(entities),
 ]
 
 logger.info('ExtendedEntities', ExtendedEntities.map((e) => e.name))
