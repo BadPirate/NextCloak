@@ -5,8 +5,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     "issuer": process.env.NEXTAUTH_URL,
     "authorization_endpoint": `${process.env.NEXTAUTH_URL}/api/oauth/authorize`,
     "token_endpoint": `${process.env.NEXTAUTH_URL}/api/oauth/token`,
-    "userinfo_endpoint": `${process.env.NEXTAUTH_URL}/api/userinfo`, // TODO: Add userinfo endpoint
-    "jwks_uri": `${process.env.NEXTAUTH_URL}/.well-known/jwks.json`, // TODO: Add JWKS endpoint
+    "userinfo_endpoint": `${process.env.NEXTAUTH_URL}/api/oauth/userinfo`,
+    "jwks_uri": `${process.env.NEXTAUTH_URL}/.well-known/jwks.json`,
     "registration_endpoint": `${process.env.NEXTAUTH_URL}/register`, // TODO: Add registration endpoint
     
     "response_types_supported": ["code", "token", "id_token"],

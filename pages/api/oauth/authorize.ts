@@ -7,6 +7,7 @@ import { getAppDataSource } from '../../../src/AppDataSource'
 import generateRandomString from '../../../src/generateRandomString'
 import OAuthAuthorizationCodeEntity from '../../../src/entities/OAuthAuthorizationCodeEntity'
 import logger from '../../../src/logger'
+import rsaKeypair from '../../../src/auth/rsaKeypair'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
@@ -56,12 +57,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     client_id,
     aud: client_id,
     scope: scope || 'openid email profile',
+    iss: `${process.env.NEXTAUTH_URL}`,
   }
 
-  const accessToken = jwt.sign(
+  const token = jwt.sign(
     payload,
-    authOptions.secret as string,
-    { expiresIn: authOptions.jwt?.maxAge || (30 * 24 * 60 * 60) },
+    rsaKeypair.privateKey,
+    {
+      algorithm: 'RS256',
+      expiresIn: authOptions.jwt?.maxAge || (30 * 24 * 60 * 60),
+    },
   )
 
   // ✅ 7. Store Authorization Code Securely
@@ -72,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     code: authorizationCode,
     redirectUri: Array.isArray(redirect_uri) ? redirect_uri[0] : redirect_uri,
     codeChallenge: (code_challenge as string).trim(), // Stored in SHA-256 format
-    accessToken,
+    token,
     expiresAt: new Date(Date.now() + 10 * 60 * 1000), // Code expires in 10 minutes
   })
 

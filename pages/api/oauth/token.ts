@@ -73,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // ✅ 6. Return Access Token
   return res.json({
-    access_token: authCodeEntry.accessToken,
+    id_token: authCodeEntry.token,
     token_type: 'Bearer',
     expires_in: 3600,
   })

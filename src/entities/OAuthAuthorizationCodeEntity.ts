@@ -17,7 +17,7 @@ export default class OAuthAuthorizationCodeEntity {
       codeChallenge: string // The hashed PKCE code_challenge
 
     @Column()
-      accessToken: string // The JWT token
+      token: string // The JWT token
 
     @CreateDateColumn()
       createdAt: Date
