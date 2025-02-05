@@ -52,12 +52,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // ✅ 5. Generate Secure Authorization Code
   const authorizationCode = generateRandomString(32) // Secure random code
 
-  const payload = {
+  const payload: {
+    sub: string,
+    client_id: string,
+    aud: string,
+    scope: string,
+    iss: string,
+    email?: string,
+    name?: string|null,
+    picture?: string|null,
+  } = {
     sub: session.user.id,
-    client_id,
-    aud: client_id,
-    scope: scope || 'openid email profile',
+    client_id: client_id as string,
+    aud: client_id as string,
+    scope: scope as string || 'openid email profile',
     iss: `${process.env.NEXTAUTH_URL}`,
+  }
+
+  if (scope && scope.includes('email') && session.user.email) {
+    payload.email = session.user.email
+  }
+
+  if (scope && scope.includes('profile')) {
+    payload.name = session.user.name
+    payload.picture = session.user.image
   }
 
   const token = jwt.sign(
