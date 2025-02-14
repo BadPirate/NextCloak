@@ -10,11 +10,10 @@ import logger from '../../src/logger'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions)
 
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const userId = session.user.id
   const AppDataSource = await getAppDataSource()
 
   // ✅ Get repositories
@@ -30,8 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (name.length < 3) {
           return res.status(400).json({ error: 'Invalid name' })
         }
-        await UserRepo.update({ id: userId }, { name })
-        logger.info('Updated name for user', userId)
+        await UserRepo.update({ id: session.user.id }, { name })
+        logger.info('Updated name for user:', session.user)
       }
 
       // Update Password (if provided)
@@ -43,21 +42,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Hash the new password
         const hashedPassword = await hash(password)
 
-        // Check if credentials exist for the user
-        let credential = await CredentialsRepo.findOne({ where: { userId } })
-
-        if (credential) {
-          // Update existing credentials
-          credential.hashedPassword = hashedPassword
-          await CredentialsRepo.save(credential)
-        } else {
-          credential = CredentialsRepo.create({
-            userId,
-            username: session.user.email || '',
-            hashedPassword,
-          })
-          await CredentialsRepo.save(credential)
-        }
+        const userId = await UserRepo.findOne({ where: { email: session.user.email } })
+          .then((user) => user?.id)
+        if (!userId) { throw new Error('User not found') }
+        CredentialsRepo.upsert({ userId, hashedPassword }, ['userId'])
       }
 
       return res.status(200).json({ success: true })

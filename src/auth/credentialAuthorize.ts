@@ -13,7 +13,7 @@ async function credentialAuthorize(credentials: Record<'username' | 'password', 
 
   // 🔍 Find the credentials by username
   const storedCredential = await credentialsRepo.findOne({
-    where: { username: credentials.username },
+    where: { user: { email: credentials.username } },
     relations: ['user'], // Ensure user data is also loaded
   })
 
@@ -30,13 +30,9 @@ async function credentialAuthorize(credentials: Record<'username' | 'password', 
     throw new Error('Invalid username or password')
   }
 
-  logger.info('✅ Credential authentication successful for', credentials.username)
+  logger.info(`User ${storedCredential.user.email} authenticated via credentials`)
 
-  return {
-    id: storedCredential.user.id,
-    name: storedCredential.user.name,
-    email: storedCredential.user.email,
-  }
+  return storedCredential.user
 }
 
 export default credentialAuthorize

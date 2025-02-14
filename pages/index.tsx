@@ -17,7 +17,7 @@ const Home = ({ hasPassword }: { hasPassword: boolean }) => {
     if (status === 'loading') return
 
     if (!session || !session.user) {
-      signIn(undefined, { callbackUrl: '/' })
+      signIn()
     }
   }, [session, status])
 
@@ -26,7 +26,7 @@ const Home = ({ hasPassword }: { hasPassword: boolean }) => {
   }
 
   if (!session || !session.user) {
-    return <Button onClick={() => signIn(undefined, { callbackUrl: '/' })}>Sign In</Button>
+    return <Button onClick={() => signIn()}>Sign In</Button>
   }
 
   return <UserInfoCard user={session.user} hasPassword={hasPassword} />
@@ -36,14 +36,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions)
 
   if (!session || !session.user) {
-    logger.info('No session found in SSR') // ✅ Debugging
+    logger.info('No session found in SSR')
     return { props: { hasPassword: null } }
   }
 
   const AppDataSource = await getAppDataSource()
   const CredentialsRepo = AppDataSource.getRepository(CredentialsEntity)
 
-  const credential = await CredentialsRepo.findOne({ where: { userId: session.user.id } })
+  const credential = await CredentialsRepo.findOne({
+    where: { user: { email: session.user.email } },
+  })
   const hasPassword = !!credential
 
   return {
