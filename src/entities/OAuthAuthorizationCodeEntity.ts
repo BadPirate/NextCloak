@@ -7,21 +7,21 @@ export default class OAuthAuthorizationCodeEntity {
     @PrimaryGeneratedColumn()
       id: number
 
-    @Column({ unique: true }) // ✅ Ensure 'code' is correctly stored
-      code: string // The authorization code
+    @Column({ unique: true })
+      code: string
 
     @Column()
-      redirectUri: string // Must match the client's registered redirect URI
+      redirectUri: string
 
     @Column()
-      codeChallenge: string // The hashed PKCE code_challenge
+      codeChallenge: string
 
     @Column()
-      token: string // The JWT token
+      token: string
 
     @CreateDateColumn()
       createdAt: Date
 
     @Column({ type: 'timestamp' })
-      expiresAt: Date // Expiration time for the code
+      expiresAt: Date
 }
