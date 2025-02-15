@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
   jwt: { maxAge: 30 * 24 * 60 * 60 },
 }
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { nextauth } = req.query
   const { adapter } = authOptions
   if (!nextauth || !adapter) throw new Error('Invalid request')
@@ -96,5 +96,5 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
       },
     },
   }
-  return NextAuth(req, res, options)
+  await NextAuth(options)(req, res)
 }
