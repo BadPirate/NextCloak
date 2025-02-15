@@ -11,7 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const session = await getServerSession(req, res, authOptions)
 
   if (!session || !session.user || !session.user.email) {
-    return res.status(401).json({ error: 'Unauthorized' })
+    res.status(401).json({ error: 'Unauthorized' })
+    return
   }
 
   const AppDataSource = await getAppDataSource()
@@ -27,7 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Update Name (if provided)
       if (name) {
         if (name.length < 3) {
-          return res.status(400).json({ error: 'Invalid name' })
+          res.status(400).json({ error: 'Invalid name' })
+          return
         }
         await UserRepo.update({ id: session.user.id }, { name })
         logger.info('Updated name for user:', session.user)
@@ -36,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Update Password (if provided)
       if (password) {
         if (password.length < 6) {
-          return res.status(400).json({ error: 'Password must be at least 6 characters' })
+          res.status(400).json({ error: 'Password must be at least 6 characters' })
+          return
         }
 
         // Hash the new password
@@ -48,12 +51,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         CredentialsRepo.upsert({ userId, hashedPassword }, ['userId'])
       }
 
-      return res.status(200).json({ success: true })
+      res.status(200).json({ success: true })
+      return
     } catch (error) {
       logger.info('Database Error:', error)
-      return res.status(500).json({ error: 'Database error' })
+      res.status(500).json({ error: 'Database error' })
+      return
     }
   }
 
-  return res.status(405).json({ error: 'Method Not Allowed' })
+  res.status(405).json({ error: 'Method Not Allowed' })
 }
