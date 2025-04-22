@@ -1,6 +1,6 @@
-# NextCloak
+# Badpirate Garage OIDC Provider
 
-NextCloak is an OpenID Connect (OIDC)–compatible authentication provider template built with Next.js, NextAuth, and TypeORM. It enables you to quickly spin up a shared identity service with:
+Badpirate Garage OIDC Provider is an OpenID Connect (OIDC)–compatible authentication provider template built with Next.js, NextAuth, and TypeORM. It enables you to quickly spin up a centralized identity service for any Badpirate Garage product, featuring:
 
 - OIDC Authorization Code flow with PKCE (`/api/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`).
 - Secure credential‑based authentication provider (Argon2 password hashing via a custom NextAuth `Credentials` provider).
@@ -115,6 +115,11 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
+
+## Privacy Policy & Terms of Service
+
+- **Privacy Policy**: [https://<your-domain>/privacy](https://<your-domain>/privacy)
+- **Terms of Service**: [https://<your-domain>/terms](https://<your-domain>/terms)
 
 ## License
 
