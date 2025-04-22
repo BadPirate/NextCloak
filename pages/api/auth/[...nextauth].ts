@@ -24,6 +24,10 @@ export const authOptions: NextAuthOptions = {
       from: process.env.EMAIL_FROM,
     }),
   ],
+  // Override the built-in error page to display custom UI
+  pages: {
+    error: '/auth/error',
+  },
   adapter: TypeORMAdapter(AppDataSource.options),
   session: { strategy: 'database' },
   secret: process.env.NEXTAUTH_SECRET,

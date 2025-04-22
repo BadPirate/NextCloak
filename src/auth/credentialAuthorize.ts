@@ -5,7 +5,9 @@ import logger from '../logger'
 
 async function credentialAuthorize(credentials: Record<'username' | 'password', string> | undefined) {
   if (!credentials?.username || !credentials?.password) {
-    throw new Error('Missing username or password')
+    // Missing credentials: fail sign in
+    logger.info('Missing username or password in credentials provider')
+    return null
   }
 
   const dataSource = await getAppDataSource()
@@ -19,7 +21,8 @@ async function credentialAuthorize(credentials: Record<'username' | 'password', 
 
   if (!storedCredential) {
     logger.info('Credentials not found for username', credentials.username)
-    throw new Error('Invalid username or password')
+    // Invalid username: fail sign in
+    return null
   }
 
   // 🔑 Compare the provided password with the stored hash
@@ -27,7 +30,8 @@ async function credentialAuthorize(credentials: Record<'username' | 'password', 
 
   if (!isValidPassword) {
     logger.info('Invalid password for username', credentials.username)
-    throw new Error('Invalid username or password')
+    // Invalid password: fail sign in
+    return null
   }
 
   logger.info(`User ${storedCredential.user.email} authenticated via credentials`)
