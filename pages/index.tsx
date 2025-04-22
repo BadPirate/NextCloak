@@ -1,4 +1,4 @@
-import { Alert, Button } from 'react-bootstrap'
+import { Alert } from 'react-bootstrap'
 import { useSession, signIn } from 'next-auth/react'
 import { useEffect } from 'react'
 import { GetServerSideProps } from 'next'
