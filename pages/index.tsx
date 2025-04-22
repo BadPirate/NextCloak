@@ -1,4 +1,4 @@
-import { Alert, Button } from 'react-bootstrap'
+import { Alert } from 'react-bootstrap'
 import { useSession, signIn } from 'next-auth/react'
 import { useEffect } from 'react'
 import { GetServerSideProps } from 'next'
@@ -13,23 +13,20 @@ const Home = ({ hasPassword }: { hasPassword: boolean }) => {
   const { data: session, status } = useSession()
 
   useEffect(() => {
-    logger.info('Session', session)
+    logger.info('Session status:', status)
     if (status === 'loading') return
-
-    if (!session || !session.user) {
+    if (status === 'unauthenticated') {
+      // Redirect to sign-in page
       signIn()
     }
-  }, [session, status])
+  }, [status])
 
-  if (status === 'loading') {
+  // While fetching session or redirecting, show loading state
+  if (status === 'loading' || status === 'unauthenticated') {
     return <Alert variant="info">Loading...</Alert>
   }
 
-  if (!session || !session.user) {
-    return <Button onClick={() => signIn()}>Sign In</Button>
-  }
-
-  return <UserInfoCard user={session.user} hasPassword={hasPassword} />
+  return <UserInfoCard user={session!.user!} hasPassword={hasPassword} />
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

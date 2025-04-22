@@ -42,6 +42,10 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
    EMAIL_FROM=no-reply@example.com
 
+   # Google OAuth
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+
    # RSA keys for ID tokens (base64‑encoded PEM)
    RSA_PRIVATE_KEY=<base64PrivateKey>
    RSA_PUBLIC_KEY=<base64PublicKey>
@@ -52,14 +56,19 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
 4. **Customize** providers:
    Edit `pages/api/auth/[...nextauth].ts` and modify the `providers` array:
    ```ts
-   import Google from 'next-auth/providers/google';
+   import Google from 'next-auth/providers/google'
+   import Email from 'next-auth/providers/email'
+   import Credentials from 'next-auth/providers/credentials'
 
    export const authOptions = {
      providers: [
-       Credentials({ /* ... */ }),
-       Email({ /* ... */ }),
+       // 1st: OAuth (Google) provider
        Google({ clientId: '...', clientSecret: '...' }),
-       // Add your own providers here...
+       // 2nd: Email sign-in
+       Email({ server: process.env.EMAIL_SERVER, from: process.env.EMAIL_FROM }),
+       // 3rd: Credentials
+       Credentials({ name: 'Credentials', credentials: { /* ... */ }, authorize: /* ... */ }),
+       // Add any additional providers here
      ],
      // ...
    }
