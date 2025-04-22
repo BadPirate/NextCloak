@@ -1,60 +1,113 @@
-# NextCloak: Next.js Common Authentication Provider
+# NextCloak
 
-This project is a Next.js based common authentication provider using `next-auth` and `TypeORM`.
+NextCloak is an OpenID Connect (OIDC)–compatible authentication provider template built with Next.js, NextAuth, and TypeORM. It enables you to quickly spin up a shared identity service with:
 
-Based on [NextStrap](https://github.com/BadPirate/nextstrap)
+- OIDC Authorization Code flow with PKCE (`/api/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`).
+- Secure credential‑based authentication provider (Argon2 password hashing via a custom NextAuth `Credentials` provider).
+- Email link sign‑in (`next-auth/providers/email`).
+- Flexible extension: add your own NextAuth providers (Google, GitHub, Apple, etc.).
 
-## Setup
+## Features
 
-### Production Environment
+- **Forkable template** to build your own centralized authentication microservice.
+- **OIDC endpoints**:
+  - `GET /api/oauth/authorize`
+  - `POST /api/oauth/token`
+  - `GET /api/oauth/userinfo`
+- **Custom Credentials provider** uses Argon2 for secure password storage.
+- **TypeORM adapter** (PostgreSQL by default) with extra entities for OAuth codes and credentials.
 
-1. You can add / update any of the Providers that 
-    [NextAuth supports](https://next-auth.js.org/v3/configuration/providers#oauth-providers), by default it's 
-    configured to use email link.
-   
-2. Create a `.env` file in the root directory with the following environment variables:
+## Getting Started
 
-    ```env
-    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
-    EMAIL_FROM=no-reply@example.com
-    AUTH_TYPEORM_CONNECTION=postgres://user:pass@postgreshost:5432/dbname
-    NEXTAUTH_SECRET=your-secret-key
-    ```
+1. **Fork** this repository and clone your fork:
+   ```sh
+   git clone https://github.com/your-org/nextcloak.git
+   cd nextcloak
+   ```
+2. **Install** dependencies:
+   ```sh
+   npm install
+   ```
+3. **Configure** environment variables:
+   Create a `.env.local` file in the project root:
+   ```env
+   # Database (PostgreSQL)
+   AUTH_TYPEORM_CONNECTION=postgres://user:pass@localhost:5432/dbname
 
-3. Build the project:
+   # NextAuth secret (used for JWT and sessions)
+   NEXTAUTH_SECRET=your-secret-key
+   NEXTAUTH_URL=http://localhost:3000
 
-    ```sh
-    npm run build
-    ```
+   # Email sign‑in (SMTP URL and sender)
+   EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
+   EMAIL_FROM=no-reply@example.com
 
-4. Start the production server:
+   # RSA keys for ID tokens (base64‑encoded PEM)
+   RSA_PRIVATE_KEY=<base64PrivateKey>
+   RSA_PUBLIC_KEY=<base64PublicKey>
 
-    ```sh
-    npm start
-    ```
+   # Optional: restrict valid redirect_uris for OAuth flows
+   REDIRECT_REGEX=^https://your-app\.example\.com.*
+   ```
+4. **Customize** providers:
+   Edit `pages/api/auth/[...nextauth].ts` and modify the `providers` array:
+   ```ts
+   import Google from 'next-auth/providers/google';
 
-### Development Environment
+   export const authOptions = {
+     providers: [
+       Credentials({ /* ... */ }),
+       Email({ /* ... */ }),
+       Google({ clientId: '...', clientSecret: '...' }),
+       // Add your own providers here...
+     ],
+     // ...
+   }
+   ```
+5. **Run** the development server:
+   ```sh
+   npm run dev
+   ```
+6. **Build** and **start** for production:
+   ```sh
+   npm run build
+   npm start
+   ```
 
-1. Create a [.env.local](http://_vscodecontentref_/0) file in the root directory with the following environment variables:
+## Usage
 
-    ```env
-    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
-    EMAIL_FROM=no-reply@example.com
-    AUTH_TYPEORM_CONNECTION=postgres://user:pass@localhost:5432/dbname
-    NEXTAUTH_SECRET=your-secret-key
-    ```
+- Sign in at `/api/auth/signin` (choose email or credentials).
+- Obtain an authorization code:
+  ```
+  GET /api/oauth/authorize?
+    client_id=your-client-id
+    &redirect_uri=your-redirect-uri
+    &response_type=code
+    &scope=openid%20email%20profile
+    &code_challenge=...
+    &code_challenge_method=S256
+  ```
+- Exchange the code for an ID token:
+  ```
+  POST /api/oauth/token
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: Basic <base64(client_id:client_secret)>
+  grant_type=authorization_code
+  code=...
+  redirect_uri=...
+  code_verifier=...
+  ```
+- Retrieve user info:
+  ```
+  GET /api/oauth/userinfo
+  Authorization: Bearer <id_token>
+  ```
 
-2. Install dependencies:
+## Contributing
 
-    ```sh
-    npm install
-    ```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
-3. Run the development server:
+## License
 
-    ```sh
-    npm run dev
-    ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
