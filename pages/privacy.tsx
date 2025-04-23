@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { NextPage } from 'next'
 import Head from 'next/head'
 import { Container, Card } from 'react-bootstrap'
@@ -38,11 +39,8 @@ const PrivacyPolicy: NextPage = () => (
 
           <h5>Contact Us</h5>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at
-            <a href="mailto:garage@badpirate.net">
-              garage@badpirate.net
-            </a>
-            .
+            If you have any questions about this Privacy Policy, please contact us at{' '}
+            <a href="mailto:garage@badpirate.net">garage@badpirate.net</a>.
           </p>
         </Card.Body>
       </Card>
