@@ -34,6 +34,7 @@ export const authOptions: NextAuthOptions = {
   ],
   // Override the built-in error page to display custom UI
   pages: {
+    signIn: '/auth/signin', // Add this line to point to the custom sign-in page
     error: '/auth/error',
   },
   adapter: TypeORMAdapter(AppDataSource.options),
