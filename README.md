@@ -1,6 +1,6 @@
-# NextCloak
+# Badpirate Garage OIDC Provider
 
-NextCloak is an OpenID Connect (OIDC)–compatible authentication provider template built with Next.js, NextAuth, and TypeORM. It enables you to quickly spin up a shared identity service with:
+Badpirate Garage OIDC Provider is an OpenID Connect (OIDC)–compatible authentication provider template built with Next.js, NextAuth, and TypeORM. It enables you to quickly spin up a centralized identity service for any Badpirate Garage product, featuring:
 
 - OIDC Authorization Code flow with PKCE (`/api/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`).
 - Secure credential‑based authentication provider (Argon2 password hashing via a custom NextAuth `Credentials` provider).
@@ -42,6 +42,10 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
    EMAIL_SERVER=smtp://user:pass@smtp.example.com:587
    EMAIL_FROM=no-reply@example.com
 
+   # Google OAuth
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+
    # RSA keys for ID tokens (base64‑encoded PEM)
    RSA_PRIVATE_KEY=<base64PrivateKey>
    RSA_PUBLIC_KEY=<base64PublicKey>
@@ -52,14 +56,19 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
 4. **Customize** providers:
    Edit `pages/api/auth/[...nextauth].ts` and modify the `providers` array:
    ```ts
-   import Google from 'next-auth/providers/google';
+   import Google from 'next-auth/providers/google'
+   import Email from 'next-auth/providers/email'
+   import Credentials from 'next-auth/providers/credentials'
 
    export const authOptions = {
      providers: [
-       Credentials({ /* ... */ }),
-       Email({ /* ... */ }),
+       // 1st: OAuth (Google) provider
        Google({ clientId: '...', clientSecret: '...' }),
-       // Add your own providers here...
+       // 2nd: Email sign-in
+       Email({ server: process.env.EMAIL_SERVER, from: process.env.EMAIL_FROM }),
+       // 3rd: Credentials
+       Credentials({ name: 'Credentials', credentials: { /* ... */ }, authorize: /* ... */ }),
+       // Add any additional providers here
      ],
      // ...
    }
@@ -106,6 +115,11 @@ NextCloak is an OpenID Connect (OIDC)–compatible authentication provider templ
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
+
+## Privacy Policy & Terms of Service
+
+- **Privacy Policy**: [https://<your-domain>/privacy](https://<your-domain>/privacy)
+- **Terms of Service**: [https://<your-domain>/terms](https://<your-domain>/terms)
 
 ## License
 

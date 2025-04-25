@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import Email from 'next-auth/providers/email'
+import Google from 'next-auth/providers/google'
 import { TypeORMAdapter } from '@auth/typeorm-adapter'
 import Credentials from 'next-auth/providers/credentials'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -11,6 +12,17 @@ import AppDataSource from '../../../src/AppDataSource'
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // OAuth providers first
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
+    // Email provider second
+    Email({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
+    }),
+    // Credentials provider last
     Credentials({
       name: 'Credentials',
       credentials: {
@@ -19,11 +31,12 @@ export const authOptions: NextAuthOptions = {
       },
       authorize: credentialAuthorize,
     }),
-    Email({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
-    }),
   ],
+  // Override the built-in error page to display custom UI
+  pages: {
+    signIn: '/auth/signin', // Add this line to point to the custom sign-in page
+    error: '/auth/error',
+  },
   adapter: TypeORMAdapter(AppDataSource.options),
   session: { strategy: 'database' },
   secret: process.env.NEXTAUTH_SECRET,
@@ -61,25 +74,35 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
     callbacks: {
       signIn: async (context) => {
-        const { user } = context
-
+        const { user, account } = context
+        // Credentials provider flow: set session cookie manually
         if (nextauth.includes('callback') && nextauth.includes('credentials') && req.method === 'POST') {
           if (user) {
             const sessionToken = randomUUID()
             const maxAge = authOptions.session?.maxAge ?? 2592000
             const sessionExpiry = new Date(Date.now() + maxAge * 1000)
-
-            await adapter.createSession!({
-              sessionToken,
-              userId: user.id,
-              expires: sessionExpiry,
+            await adapter.createSession!({ sessionToken, userId: user.id, expires: sessionExpiry })
+            new Cookies(req, res).set('next-auth.session-token', sessionToken, { expires: sessionExpiry })
+          }
+        }
+        // Link Google accounts by email to existing user records
+        if (account?.provider === 'google' && user.email) {
+          // Try to find an existing user by email
+          const existingUser = await adapter.getUserByEmail!(user.email)
+          if (existingUser && existingUser.id !== user.id) {
+            // Link the new Google account to the existing user
+            await adapter.linkAccount!({
+              userId: existingUser.id,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              type: 'oauth',
+              refresh_token: account.refresh_token,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              id_token: account.id_token,
             })
-
-            const cookies = new Cookies(req, res)
-
-            cookies.set('next-auth.session-token', sessionToken, {
-              expires: sessionExpiry,
-            })
+            // Override session user id to the existing user's id
+            context.user.id = existingUser.id
           }
         }
         return true
