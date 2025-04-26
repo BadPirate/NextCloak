@@ -21,12 +21,12 @@ Badpirate Garage OIDC Provider is an OpenID Connect (OIDC)–compatible authenti
 
 1. **Fork** this repository and clone your fork:
    ```sh
-   git clone https://github.com/your-org/nextcloak.git
-   cd nextcloak
+   git clone https://github.com/your-org/badpirate-auth.git
+   cd badpirate-auth
    ```
 2. **Install** dependencies:
    ```sh
-   npm install
+   yarn install
    ```
 3. **Configure** environment variables:
    Create a `.env.local` file in the project root:
@@ -75,13 +75,21 @@ Badpirate Garage OIDC Provider is an OpenID Connect (OIDC)–compatible authenti
    ```
 5. **Run** the development server:
    ```sh
-   npm run dev
+   yarn dev
    ```
 6. **Build** and **start** for production:
    ```sh
-   npm run build
-   npm start
+   yarn build
+   yarn start
    ```
+
+## Code Style
+
+This project follows the Airbnb style guide and enforces it using ESLint. Always make sure your code passes lint checks before submitting:
+
+```sh
+yarn lint
+```
 
 ## Usage
 

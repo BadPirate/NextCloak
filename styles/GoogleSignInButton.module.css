@@ -1,0 +1,84 @@
+.gsiButton {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #dadce0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 1px 1px;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 14px;
+  height: 40px;
+  letter-spacing: 0.25px;
+  outline: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  text-align: center;
+  transition: background-color 0.218s, border-color 0.218s, box-shadow 0.218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 400px;
+}
+
+.gsiButton:hover {
+  border-color: #d2e3fc;
+  background-color: #f8faff;
+}
+
+.gsiButton:focus {
+  border-color: #4285f4;
+  box-shadow: rgba(66, 133, 244, 0.3) 0 0 0 2px;
+}
+
+.gsiButton:active {
+  background-color: #f4f8ff;
+  box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0, rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+}
+
+.gsiButtonState {
+  border-radius: 4px;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity 0.218s;
+}
+
+.gsiButton:disabled .gsiButtonState {
+  background-color: #ffffff;
+  border-color: #e8e8e8;
+  color: #9e9e9e;
+  cursor: auto;
+}
+
+.gsiButtonContentWrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+
+.gsiButtonIcon {
+  height: 20px;
+  margin-left: 12px;
+  margin-right: 8px;
+  min-width: 20px;
+  width: 20px;
+}
+
+.gsiButtonContents {
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: .21px;
+  font-size: 14px;
+  margin-left: 6px;
+  margin-right: 16px;
+  vertical-align: top;
+  flex-grow: 1;
+  text-align: center;
+}

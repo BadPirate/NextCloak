@@ -48,6 +48,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { adapter } = authOptions
   if (!nextauth || !adapter) throw new Error('Invalid request')
 
+  console.log({ req, res })
   const options: NextAuthOptions = {
     ...authOptions,
     jwt: {
