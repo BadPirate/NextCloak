@@ -13,9 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   let { client_secret, client_id } = req.body
-  const {
-    grant_type, code, redirect_uri, code_verifier,
-  } = req.body
+  const { grant_type, code, redirect_uri, code_verifier } = req.body
 
   if (!client_secret) {
     const authHeader = req.headers.authorization
@@ -47,7 +45,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const expectedSecret = base64Sha256(client_id + authOptions.secret)
 
   if (expectedSecret !== client_secret) {
-    logger.info(`Invalid client secret for ${client_id}, expected: ${expectedSecret}, got: ${client_secret}`)
+    logger.info(
+      `Invalid client secret for ${client_id}, expected: ${expectedSecret}, got: ${client_secret}`,
+    )
     res.status(400).json({ error: 'Invalid client secret' })
     return
   }
@@ -66,7 +66,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const hashedVerifier = base64Sha256(code_verifier)
 
   if (hashedVerifier !== authCodeEntry.codeChallenge) {
-    logger.info('PKCE code_verifier mismatch', { hashedVerifier, challenge: authCodeEntry.codeChallenge })
+    logger.info('PKCE code_verifier mismatch', {
+      hashedVerifier,
+      challenge: authCodeEntry.codeChallenge,
+    })
     res.status(400).json({ error: 'Invalid PKCE code_verifier' })
     return
   }

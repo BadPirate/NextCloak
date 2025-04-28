@@ -3,7 +3,9 @@ import { getAppDataSource } from '../AppDataSource'
 import CredentialsEntity from '../entities/CredentialsEntity'
 import logger from '../logger'
 
-async function credentialAuthorize(credentials: Record<'username' | 'password', string> | undefined) {
+async function credentialAuthorize(
+  credentials: Record<'username' | 'password', string> | undefined,
+) {
   if (!credentials?.username || !credentials?.password) {
     // Missing credentials: fail sign in
     logger.info('Missing username or password in credentials provider')

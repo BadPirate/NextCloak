@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   // Ensure error pages are properly rendered
   onDemandEntries: {
     // period (in ms) where the server will keep pages in the buffer

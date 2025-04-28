@@ -2,10 +2,10 @@ import { hash } from 'argon2'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { entities } from '@auth/typeorm-adapter'
-import { authOptions } from './auth/[...nextauth]'
 import { getAppDataSource } from '../../src/AppDataSource'
 import CredentialsEntity from '../../src/entities/CredentialsEntity'
 import logger from '../../src/logger'
+import { authOptions } from './auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions)
@@ -45,9 +45,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Hash the new password
         const hashedPassword = await hash(password)
 
-        const userId = await UserRepo.findOne({ where: { email: session.user.email } })
-          .then((user) => user?.id)
-        if (!userId) { throw new Error('User not found') }
+        const userId = await UserRepo.findOne({ where: { email: session.user.email } }).then(
+          (user) => user?.id,
+        )
+        if (!userId) {
+          throw new Error('User not found')
+        }
         CredentialsRepo.upsert({ userId, hashedPassword }, ['userId'])
       }
 

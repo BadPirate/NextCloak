@@ -20,7 +20,10 @@ export const ExtendedEntities = [
   ...Object.values(entities),
 ]
 
-logger.info('ExtendedEntities', ExtendedEntities.map((e) => e.name))
+logger.info(
+  'ExtendedEntities',
+  ExtendedEntities.map((e) => e.name),
+)
 
 const AppDataSource = new DataSource({
   type: 'postgres', // Change if using MySQL, SQLite, etc.

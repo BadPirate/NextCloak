@@ -1,20 +1,6 @@
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
-import { useEffect, useState } from 'react'
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Form,
-  Card,
-  Nav,
-} from 'react-bootstrap'
-import {
-  getProviders,
-  signIn,
-  getCsrfToken,
-  ClientSafeProvider,
-} from 'next-auth/react'
+import { Container, Row, Col, Button, Form, Card, Nav } from 'react-bootstrap'
+import { getProviders, signIn, getCsrfToken, ClientSafeProvider } from 'next-auth/react'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../api/auth/[...nextauth]'
 import GoogleSignInButton from '../../src/components/GoogleSignInButton'
@@ -22,13 +8,13 @@ import GoogleSignInButton from '../../src/components/GoogleSignInButton'
 // Define expected provider structure more accurately
 interface ExtendedClientSafeProvider extends ClientSafeProvider {
   credentials?: {
-    username: { label?: string; placeholder?: string };
-    password: { label?: string; placeholder?: string };
-  };
+    username: { label?: string; placeholder?: string }
+    password: { label?: string; placeholder?: string }
+  }
 }
 
 // Define the expected shape of the providers prop from getServerSideProps
-type ProvidersType = Record<string, ExtendedClientSafeProvider> | null;
+type ProvidersType = Record<string, ExtendedClientSafeProvider> | null
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions)
@@ -42,9 +28,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      providers: providers as ProvidersType ?? {},
+      providers: (providers as ProvidersType) ?? {},
       csrfToken: csrfToken ?? '',
-      callbackUrl: context.query.callbackUrl as string || '/',
+      callbackUrl: (context.query.callbackUrl as string) || '/',
     },
   }
 }
@@ -56,7 +42,8 @@ const SignIn = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const safeProviders = providers ?? {}
   const displayProviders = Object.values(safeProviders).filter(
-    (provider: ExtendedClientSafeProvider): provider is ExtendedClientSafeProvider => provider.id !== 'credentials',
+    (provider: ExtendedClientSafeProvider): provider is ExtendedClientSafeProvider =>
+      provider.id !== 'credentials',
   )
   const credentialsProvider = safeProviders.credentials
   const googleProvider = safeProviders.google
@@ -84,9 +71,7 @@ const SignIn = ({
                     variant="outline-primary"
                     onClick={() => signIn(provider.id, { callbackUrl })}
                   >
-                    Sign in with
-                    {' '}
-                    {provider.name}
+                    Sign in with {provider.name}
                   </Button>
                 </div>
               ))}
@@ -105,9 +90,7 @@ const SignIn = ({
                       <Form.Control
                         name="username"
                         type="text"
-                        placeholder={
-                          credentialsProvider.credentials?.username.placeholder ?? ''
-                        }
+                        placeholder={credentialsProvider.credentials?.username.placeholder ?? ''}
                         required
                       />
                     </Form.Group>
@@ -119,17 +102,13 @@ const SignIn = ({
                       <Form.Control
                         name="password"
                         type="password"
-                        placeholder={
-                          credentialsProvider.credentials?.password.placeholder ?? ''
-                        }
+                        placeholder={credentialsProvider.credentials?.password.placeholder ?? ''}
                         required
                       />
                     </Form.Group>
                     <div className="d-grid">
                       <Button variant="primary" type="submit">
-                        Sign in with
-                        {' '}
-                        {credentialsProvider.name}
+                        Sign in with {credentialsProvider.name}
                       </Button>
                     </div>
                   </Form>

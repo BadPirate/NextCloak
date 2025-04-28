@@ -9,12 +9,8 @@ interface ErrorProps {
 const ErrorPage: NextPage<ErrorProps> = ({ statusCode, message }) => (
   <Container className="mt-5">
     <Alert variant="danger">
-      <Alert.Heading>
-        {statusCode ? `Error ${statusCode}` : 'Client-side Error'}
-      </Alert.Heading>
-      <p>
-        {message || 'An unexpected error occurred. Please try again later.'}
-      </p>
+      <Alert.Heading>{statusCode ? `Error ${statusCode}` : 'Client-side Error'}</Alert.Heading>
+      <p>{message || 'An unexpected error occurred. Please try again later.'}</p>
     </Alert>
   </Container>
 )

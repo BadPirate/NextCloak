@@ -131,5 +131,14 @@ module.exports = {
         '@typescript-eslint/camelcase': 'off',
       },
     },
+    {
+      // Special rules for config files that are JS rather than TS
+      files: ['next.config.js', 'jest.config.js', 'jest.setup.js', '*.js'],
+      parser: 'espree', // Use the default JavaScript parser instead of TypeScript
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+      },
+    },
   ],
 }

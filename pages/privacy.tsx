@@ -13,14 +13,11 @@ const PrivacyPolicy: NextPage = () => (
         <Card.Body>
           <Card.Title className="mb-4">Privacy Policy</Card.Title>
           <Card.Text>
-            This Privacy Policy describes how Badpirate Garage
-            (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) collects, uses, and shares
-            information in connection with the Badpirate Garage Identity Provider
-            (&quot;Service&quot;).
+            This Privacy Policy describes how Badpirate Garage (&quot;we&quot;, &quot;us&quot;, or
+            &quot;our&quot;) collects, uses, and shares information in connection with the Badpirate
+            Garage Identity Provider (&quot;Service&quot;).
           </Card.Text>
-          <Card.Text>
-            Your privacy is important to us.
-          </Card.Text>
+          <Card.Text>Your privacy is important to us.</Card.Text>
 
           <h5>Information We Collect</h5>
           <ul>
@@ -38,10 +35,8 @@ const PrivacyPolicy: NextPage = () => (
 
           <h5>Contact Us</h5>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at
-            {' '}
-            <a href="mailto:garage@badpirate.net">garage@badpirate.net</a>
-            .
+            If you have any questions about this Privacy Policy, please contact us at{' '}
+            <a href="mailto:garage@badpirate.net">garage@badpirate.net</a>.
           </p>
         </Card.Body>
       </Card>

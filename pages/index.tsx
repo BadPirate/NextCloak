@@ -4,10 +4,11 @@ import { useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import UserInfoCard from '../src/components/UserInfoCard'
-import { authOptions } from './api/auth/[...nextauth]'
 import { getAppDataSource } from '../src/AppDataSource'
 import CredentialsEntity from '../src/entities/CredentialsEntity'
 import logger from '../src/logger'
+import { authOptions } from './api/auth/[...nextauth]'
+import Page from '@/src/components/Page'
 
 const Home = ({ hasPassword }: { hasPassword: boolean }) => {
   const { data: session, status } = useSession()
@@ -23,10 +24,28 @@ const Home = ({ hasPassword }: { hasPassword: boolean }) => {
 
   // While fetching session or redirecting, show loading state
   if (status === 'loading' || status === 'unauthenticated') {
-    return <Alert variant="info">Loading...</Alert>
+    return (
+      <Page title="Loading">
+        <Alert variant="info">Loading...</Alert>
+      </Page>
+    )
   }
 
-  return <UserInfoCard user={session!.user!} hasPassword={hasPassword} />
+  // Safely handle the possibility of session or user being undefined
+  if (!session?.user) {
+    return (
+      <Page title="Error">
+        <Alert variant="danger">Session error. Please try logging in again.</Alert>
+      </Page>
+    )
+  }
+
+  // When authenticated and we have user data, show user info with welcome card
+  return (
+    <Page title="Welcome to Badpirate Garage Auth">
+      <UserInfoCard user={session.user} hasPassword={hasPassword} />
+    </Page>
+  )
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -41,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const CredentialsRepo = AppDataSource.getRepository(CredentialsEntity)
 
   const credential = await CredentialsRepo.findOne({
-    where: { user: { email: session.user.email } },
+    where: { userId: session.user.id },
   })
   const hasPassword = !!credential
 

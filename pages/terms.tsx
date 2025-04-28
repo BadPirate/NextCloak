@@ -18,14 +18,10 @@ const TermsOfService: NextPage = () => (
             These Terms of Service (&quot;Terms&quot;) govern your access to and use of the
             Badpirate Garage Identity Provider (&quot;Service&quot;).
           </Card.Text>
-          <Card.Text>
-            Please read these Terms carefully before using the Service.
-          </Card.Text>
+          <Card.Text>Please read these Terms carefully before using the Service.</Card.Text>
 
           <h5>1. Acceptance of Terms</h5>
-          <p>
-            By accessing or using the Service, you agree to be bound by these Terms.
-          </p>
+          <p>By accessing or using the Service, you agree to be bound by these Terms.</p>
 
           <h5>2. Use of the Service</h5>
           <ul>
@@ -35,8 +31,8 @@ const TermsOfService: NextPage = () => (
 
           <h5>3. Changes to Terms</h5>
           <p>
-            We may modify these Terms at any time. Notice of changes will be provided by posting
-            the updated Terms on this page.
+            We may modify these Terms at any time. Notice of changes will be provided by posting the
+            updated Terms on this page.
           </p>
 
           <h5>Contact Us</h5>

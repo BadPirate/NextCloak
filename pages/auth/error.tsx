@@ -10,7 +10,8 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   OAuthCallback: {
     title: 'OAuth Callback Error',
-    description: 'The provider returned an error during callback. Please try again or contact support.',
+    description:
+      'The provider returned an error during callback. Please try again or contact support.',
   },
   OAuthCreateAccount: {
     title: 'Account Creation Failed',
@@ -26,7 +27,8 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   OAuthAccountNotLinked: {
     title: 'Account Not Linked',
-    description: 'This email is already associated with another sign in method. Please use the same provider you originally used.',
+    description:
+      'This email is already associated with another sign in method. Please use the same provider you originally used.',
   },
   EmailSignin: {
     title: 'Email Sign In Failed',

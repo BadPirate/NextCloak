@@ -1,10 +1,10 @@
+import { randomUUID } from 'crypto'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import Email from 'next-auth/providers/email'
 import Google from 'next-auth/providers/google'
 import { TypeORMAdapter } from '@auth/typeorm-adapter'
 import Credentials from 'next-auth/providers/credentials'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { randomUUID } from 'crypto'
 import { decode, encode } from 'next-auth/jwt'
 import Cookies from 'cookies'
 import credentialAuthorize from '../../../src/auth/credentialAuthorize'
@@ -43,18 +43,21 @@ export const authOptions: NextAuthOptions = {
   jwt: { maxAge: 30 * 24 * 60 * 60 },
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const nextAuthHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { nextauth } = req.query
   const { adapter } = authOptions
   if (!nextauth || !adapter) throw new Error('Invalid request')
 
-  console.log({ req, res })
   const options: NextAuthOptions = {
     ...authOptions,
     jwt: {
       encode: async (context) => {
         const { token, secret, maxAge } = context
-        if (nextauth.includes('callback') && nextauth.includes('credentials') && req.method === 'POST') {
+        if (
+          nextauth.includes('callback') &&
+          nextauth.includes('credentials') &&
+          req.method === 'POST'
+        ) {
           const cookies = new Cookies(req, res)
           const cookie = cookies.get('next-auth.session-token')
           return cookie ?? ''
@@ -65,7 +68,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
       decode: async (context) => {
         const { token, secret } = context
-        if (nextauth.includes('callback') && nextauth.includes('credentials') && req.method === 'POST') {
+        if (
+          nextauth.includes('callback') &&
+          nextauth.includes('credentials') &&
+          req.method === 'POST'
+        ) {
           return null
         }
 
@@ -77,22 +84,41 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       signIn: async (context) => {
         const { user, account } = context
         // Credentials provider flow: set session cookie manually
-        if (nextauth.includes('callback') && nextauth.includes('credentials') && req.method === 'POST') {
+        if (
+          nextauth.includes('callback') &&
+          nextauth.includes('credentials') &&
+          req.method === 'POST'
+        ) {
           if (user) {
             const sessionToken = randomUUID()
             const maxAge = authOptions.session?.maxAge ?? 2592000
             const sessionExpiry = new Date(Date.now() + maxAge * 1000)
-            await adapter.createSession!({ sessionToken, userId: user.id, expires: sessionExpiry })
-            new Cookies(req, res).set('next-auth.session-token', sessionToken, { expires: sessionExpiry })
+
+            // Safe assertion - we know adapter exists from the check above
+            if (adapter.createSession) {
+              await adapter.createSession({
+                sessionToken,
+                userId: user.id,
+                expires: sessionExpiry,
+              })
+              new Cookies(req, res).set('next-auth.session-token', sessionToken, {
+                expires: sessionExpiry,
+              })
+            }
           }
         }
         // Link Google accounts by email to existing user records
-        if (account?.provider === 'google' && user.email) {
+        if (
+          account?.provider === 'google' &&
+          user.email &&
+          adapter.getUserByEmail &&
+          adapter.linkAccount
+        ) {
           // Try to find an existing user by email
-          const existingUser = await adapter.getUserByEmail!(user.email)
+          const existingUser = await adapter.getUserByEmail(user.email)
           if (existingUser && existingUser.id !== user.id) {
             // Link the new Google account to the existing user
-            await adapter.linkAccount!({
+            await adapter.linkAccount({
               userId: existingUser.id,
               provider: account.provider,
               providerAccountId: account.providerAccountId,
@@ -122,3 +148,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
   await NextAuth(options)(req, res)
 }
+
+export default nextAuthHandler
