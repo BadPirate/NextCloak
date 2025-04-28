@@ -1,7 +1,6 @@
 import { Alert, Button, Form, InputGroup, Table } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
-import RootNav from './RootNav'
 
 function infoRow(key: string, value: string) {
   return (
@@ -99,7 +98,7 @@ const UserInfo = ({
   const buttonText = hasSetPassword ? 'Change Password' : 'Set Password'
 
   return (
-    <RootNav>
+    <>
       <Table striped bordered>
         <tbody>
           {infoRow('Email', user.email || 'Unknown')}
@@ -168,7 +167,7 @@ const UserInfo = ({
         </tbody>
       </Table>
       <Button onClick={() => signOut()}>Sign out</Button>
-    </RootNav>
+    </>
   )
 }
 

@@ -5,6 +5,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   min-height: 100vh;
+  padding: 2rem;
 }
 
 /* Make cards stand out with a translucent backdrop */

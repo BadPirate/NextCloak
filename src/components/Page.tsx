@@ -1,6 +1,5 @@
 import React from 'react'
 import Head from 'next/head'
-import RootNav from './RootNav'
 
 interface PageProps {
   title?: string
@@ -14,7 +13,7 @@ const Page: React.FC<PageProps> = ({ title, children }) => (
         <title>{title}</title>
       </Head>
     )}
-    <RootNav>{children}</RootNav>
+    {children}
   </>
 )
 
