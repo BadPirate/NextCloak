@@ -1,6 +1,4 @@
-import {
-  Entity, PrimaryColumn, Column, OneToOne, JoinColumn,
-} from 'typeorm'
+import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from 'typeorm'
 import { entities } from '@auth/typeorm-adapter'
 
 const { UserEntity } = entities
@@ -8,14 +6,14 @@ const { UserEntity } = entities
 @Entity({ name: 'credentials' })
 class CredentialsEntity {
   @PrimaryColumn('uuid')
-    userId!: string
+  userId!: string
 
   @Column()
-    hashedPassword!: string
+  hashedPassword!: string
 
   @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-    user!: any
+  user!: (typeof UserEntity)['prototype']
 }
 
 export default CredentialsEntity

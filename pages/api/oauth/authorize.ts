@@ -10,13 +10,18 @@ import OAuthAuthorizationCodeEntity from '../../../src/entities/OAuthAuthorizati
 import logger from '../../../src/logger'
 import rsaKeypair from '../../../src/auth/rsaKeypair'
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const authorizeHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
-    client_id, redirect_uri, response_type, state, code_challenge, code_challenge_method, scope,
+    client_id,
+    redirect_uri,
+    response_type,
+    state,
+    code_challenge,
+    code_challenge_method,
+    scope,
   } = req.query
 
-  if (!client_id || !redirect_uri || !response_type || !code_challenge
-    || !code_challenge_method) {
+  if (!client_id || !redirect_uri || !response_type || !code_challenge || !code_challenge_method) {
     throw new Error('Missing required parameters')
   }
 
@@ -41,7 +46,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions)
   if (!session || !session.user || !session.user.email) {
     const reqUrl = req.url
-    if (!reqUrl) { throw new Error('Missing req.url') }
+    if (!reqUrl) {
+      throw new Error('Missing req.url')
+    }
     res.redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(reqUrl)}`)
     return
   }
@@ -50,24 +57,27 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const appDataSource = await getAppDataSource()
   const userRepo = appDataSource.getRepository(entities.UserEntity)
-  const userId = await userRepo.findOne({ where: { email: session.user.email } })
+  const userId = await userRepo
+    .findOne({ where: { email: session.user.email } })
     .then((user) => user?.id)
-  if (!userId) { throw new Error('User not found') }
+  if (!userId) {
+    throw new Error('User not found')
+  }
 
   const payload: {
-    sub: string,
-    client_id: string,
-    aud: string,
-    scope: string,
-    iss: string,
-    email?: string,
-    name?: string|null,
-    picture?: string|null,
+    sub: string
+    client_id: string
+    aud: string
+    scope: string
+    iss: string
+    email?: string
+    name?: string | null
+    picture?: string | null
   } = {
     sub: userId,
     client_id: client_id as string,
     aud: client_id as string,
-    scope: scope as string || 'openid email profile',
+    scope: (scope as string) || 'openid email profile',
     iss: `${process.env.NEXTAUTH_URL}`,
   }
 
@@ -80,14 +90,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     payload.picture = session.user.image
   }
 
-  const token = jwt.sign(
-    payload,
-    rsaKeypair.privateKey,
-    {
-      algorithm: 'RS256',
-      expiresIn: authOptions.jwt?.maxAge || (30 * 24 * 60 * 60),
-    },
-  )
+  const token = jwt.sign(payload, rsaKeypair.privateKey, {
+    algorithm: 'RS256',
+    expiresIn: authOptions.jwt?.maxAge || 30 * 24 * 60 * 60,
+  })
 
   const dataSource = await getAppDataSource()
   const oauthCodeRepo = dataSource.getRepository(OAuthAuthorizationCodeEntity)
@@ -104,3 +110,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   res.redirect(`${redirect_uri}?code=${authorizationCode}&state=${state}`)
 }
+
+export default authorizeHandler

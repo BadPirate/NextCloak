@@ -1,3 +1,8 @@
+.db/
+logfile
+.env.local
+dev.db
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -7,6 +12,8 @@
 
 # testing
 /coverage
+test-results
+test.db-journal
 
 # next.js
 /.next/
@@ -20,7 +27,6 @@
 *.pem
 
 # debug
-npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
@@ -32,4 +38,11 @@ yarn-error.log*
 
 # vercel
 .vercel
+dev.db
+
+# Ignore Prisma generated client artifacts
+prisma/node_modules/
+test.db
+
+# TypeScript
 tsconfig.tsbuildinfo

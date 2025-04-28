@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import { NextPage } from 'next'
 import Head from 'next/head'
 import { Container, Card } from 'react-bootstrap'
@@ -14,14 +13,11 @@ const PrivacyPolicy: NextPage = () => (
         <Card.Body>
           <Card.Title className="mb-4">Privacy Policy</Card.Title>
           <Card.Text>
-            This Privacy Policy describes how Badpirate Garage
-            (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) collects, uses, and shares
-            information in connection with the Badpirate Garage Identity Provider
-            (&quot;Service&quot;).
+            This Privacy Policy describes how Badpirate Garage (&quot;we&quot;, &quot;us&quot;, or
+            &quot;our&quot;) collects, uses, and shares information in connection with the Badpirate
+            Garage Identity Provider (&quot;Service&quot;).
           </Card.Text>
-          <Card.Text>
-            Your privacy is important to us.
-          </Card.Text>
+          <Card.Text>Your privacy is important to us.</Card.Text>
 
           <h5>Information We Collect</h5>
           <ul>

@@ -7,9 +7,9 @@ if (!nextAuthSecret) {
 }
 
 interface DecodedToken {
-    id: string;
-    email: string;
-    name: string;
+  id: string
+  email: string
+  name: string
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

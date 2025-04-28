@@ -1,9 +1,6 @@
-import {
-  Alert, Button, Form, InputGroup, Table,
-} from 'react-bootstrap'
+import { Alert, Button, Form, InputGroup, Table } from 'react-bootstrap'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
-import RootNav from './RootNav'
 
 function infoRow(key: string, value: string) {
   return (
@@ -23,7 +20,7 @@ const UserInfo = ({
     name?: string | null
     email?: string | null
     image?: string | null
-  },
+  }
   hasPassword: boolean
 }) => {
   const { data: session } = useSession()
@@ -101,7 +98,7 @@ const UserInfo = ({
   const buttonText = hasSetPassword ? 'Change Password' : 'Set Password'
 
   return (
-    <RootNav>
+    <>
       <Table striped bordered>
         <tbody>
           {infoRow('Email', user.email || 'Unknown')}
@@ -117,10 +114,7 @@ const UserInfo = ({
                   placeholder="Not Set"
                 />
                 {!loading && name !== user.name ? (
-                  <Button
-                    onClick={updateUser}
-                    disabled={loading || name === user?.name}
-                  >
+                  <Button onClick={updateUser} disabled={loading || name === user?.name}>
                     {loading ? 'Saving...' : 'Update'}
                   </Button>
                 ) : null}
@@ -173,7 +167,7 @@ const UserInfo = ({
         </tbody>
       </Table>
       <Button onClick={() => signOut()}>Sign out</Button>
-    </RootNav>
+    </>
   )
 }
 
